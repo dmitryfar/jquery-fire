@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://code.jquery.com/jquery.min.js"></script>
+	<script src="js/jquery-fire.js"></script>
+	
+	<style>
+		body { font-family: tahoma; font-size: 12px; line-height: 150%; }
+		evt { color: OrangeRed;}
+		data { color: RoyalBlue;}
+		fnc { color: Gray;}
+	</style>
+</head>
+<body>
+<div id="log"></div>
+
+<script>
+if (typeof(console) == "undefined") {
+	var console = {
+		info: function(){},
+		warn: function(){},
+		error: function(){},
+		log: function(){},
+		time: function(){},
+		timeEnd: function(){}
+	};
+}
+
+jQuery.on("testEvent", function(event, data) {
+	console.log("%o: %o, data: %o", this._type, event, data);
+	if (typeof data == 'function') {
+		$("#log").append("<div>event: <evt>\"" + this._type + "\"</evt>, data: <data>" + "function ..." + "</data></div>");
+		data.call(this, "WORLD", "!!!");
+		data.apply(this, ["my ", "friend."]);
+	} else {
+		$("#log").append("<div>event: <evt>\"" + this._type + "\"</evt>, data: <data>" + data + "</data></div>");
+	}
+});
+
+jQuery.on("multpleDataEvent1", function(event, data1, data2, data3, data4) {
+	console.log("%o: %o, data1: %o, data2: %o, data3: %o, data4: %o", this.type, event, data1, data2, data3, data4);
+	$("#log").append("<div>event: <evt>\"" + this._type + "\"</evt> : data1: <data>" + data1 + "</data>, data2: <data>" + data2 + "</data>, data3: <data>" + data3 + "</data>, data4: <data>" + data4 + "</data></div>");
+});
+jQuery.on("multpleDataEvent2", function(event) {
+	console.log("%o: %o, details: %o", event.type, event, event.details);
+	$("#log").append("<div>event: <evt>\"" + event._type + "\"</evt> : details: <data>" + event.details + "</data></div>");
+});
+
+jQuery.on("fireOnceEvent", function(event) {
+	console.log("(v.1) type:%o, event.n:%o", this._type, event.n);
+	$("#log").append("<div>event (v.1): <evt>\"" + this._type + "\"</evt> : n: <data>" + event.n + "</data></div>");
+});
+jQuery.on("fireOnceEvent", function(event, data) {
+	console.log("(v.2) type: %o, event.n: %o, data.n: %o", this._type, event.n, data.n);
+	$("#log").append("<div>event (v.2): <evt>\"" + this._type + "\"</evt> : n: <data>" + event.n + "</data></div>");
+});
+
+jQuery.on("simpleEvent", function(event) {
+	console.log("simple event");
+	$("#log").append("<div>event: <evt>\"" + event._type + "\"</evt></div>");
+});
+
+var abc = function(text, text2){
+	var event = this;
+	$("#log").append("<div><fnc>-- Hello, " + text + text2 + " --</fnc></div>");
+};
+
+(function($){
+	$.fire("testEvent", {a: ["n=1", "m=1"]});
+	$.fire("testEvent", ["n=1", "m=1", 234]);
+	$.fire("testEvent", "n=2");
+	$.fire("testEvent", abc);
+	$.fire("multpleDataEvent1", "n1", "n2", "n3");
+	$.fire("multpleDataEvent2", "n1", "n2", "n3");
+	
+	$.fire("simpleEvent");
+})(jQuery);
+
+(function($){
+	jQuery.fireOnce("fireOnceEvent", {"n": "1"});	
+	jQuery.fireOnce("fireOnceEvent", {"n": "2"});	
+	jQuery.fireOnce("fireOnceEvent", {"n": "3"});	
+	jQuery.fireOnce("fireOnceEvent", {"n": "4"});	
+})(jQuery);
+
+</script>
+
+</body>
+</html>
